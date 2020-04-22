@@ -1,4 +1,4 @@
-# Puppet Master and Clinet with terraform
+# Puppet Master and Client with terraform
 
 ## Terraform commands to run after installing terraform ##
 
