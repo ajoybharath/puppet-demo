@@ -1,0 +1,33 @@
+We will create the manifest for Apache httpd web server installation.
+
+On the puppet master server, go to the '/etc/puppetlabs/code/' directory and create the new manifest file 'site.pp' using vim.
+
+cd /etc/puppetlabs/code/
+
+cd environments/production/manifests
+
+Create new manifest file.
+
+vim site.pp
+
+node 'puppet-agent' {
+     package { 'httpd':
+         ensure  => "installed",
+     }
+     service { 'httpd':
+         ensure => running,
+     enable => true
+     }
+ }
+
+Now open the puppet agent server shell and run the command below.
+
+/opt/puppetlabs/bin/puppet agent --test
+
+The command will retrieve new manifest configuration file from the puppet master and then apply it to the agent server.
+
+Open your web browser and type the IP address of the puppet agent.
+
+http://<IP>/
+
+And you should get the default HTTP page, if everthing goes well.

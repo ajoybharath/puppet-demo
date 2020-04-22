@@ -1,0 +1,40 @@
+Install Java and Tomcat 
+
+To install Java you should install Java module, this module automatically installs Java JDK and simplifies the installation of Java using Puppet.
+
+Execute this (on master): 
+
+ puppet module install puppetlabs-java 
+
+Now, we will need toinstall the Tomcat module. It allows you to use Puppet to install Tomcat, manage its configuration files and deploy web apps to it.
+
+To install latest compatible version of Tomcat Module:
+
+Execute this (on master): 
+
+ puppet module install puppetlabs-tomcat 
+
+Execute this (on master): 
+
+ vi /etc/puppet/manifests/site.pp 
+
+node 'puppet-agent' {
+
+class {  ‘java’ :
+ package => ‘java-1.8.0-openjdk-devel’:
+ }
+ tomcat::install { ‘/opt/tomcat’:
+   source_url => ‘http://redrockdigimark.com/apachemirror/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz’,
+ }
+ tomcat::instance { ‘default’:
+ catalana_home => ‘/opt/tomcat’,
+ }
+ }
+
+ Puppet Agent pulls its configuration from the Master periodically (after every 30 minutes). It will evaluate the main manifest and apply the module that specifies Tomcat setup. If you want to try it out immediately, you need to run the following command on every Agent node:
+
+Execute this (on agent): 
+
+ puppet agent -t 
+
+ Open puppet-client <IP>:8080 in your browser on and you should see default tomcat page if everthing goes well.

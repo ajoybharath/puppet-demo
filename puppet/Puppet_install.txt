@@ -1,0 +1,114 @@
+===================== Puppet Pre-Installation =====================
+
+Capacity Planning:
+
+    2 CentOS 7 servers
+    puppet-master   -	t2.medium
+    puppet-client	-	t2.micro
+
+edit /etc/hosts and add both these hosts and IP in the file
+
+10.0.15.10      puppet-master
+10.0.15.11      puppet-client
+
+try to ping to the hosts
+
+ping puppet-client
+ping puppet-master
+
+===================== NTP =====================
+
+Install the NTP packages on both servers using the yum command.
+
+yum -y install ntp ntpdate
+
+choose the NTP pool 
+
+ntpdate 0.centos.pool.ntp.org
+
+start the NTP service and enable it
+
+systemctl start ntpd
+systemctl enable ntpd
+
+===================== Disable SELinux =====================
+
+/etc/sysconfig/selinux
+
+SELINUX=disabled
+
+===================== Add Puppet Repository =====================
+
+rpm -Uvh https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
+
+When all these are completed reboot the instance.
+
+ ===================== Install and Configure Puppetserver =====================
+
+ Install puppet-server in puppet-master host
+
+ yum -y install puppetserver
+
+ configure the memory allocation for puppetserver. We will set the max memory allocation for puppetserver to 1GB.
+
+ /etc/sysconfig/puppetserver
+
+Change the line like below
+
+ JAVA_ARGS="-Xms1g -Xmx1g ...."
+
+edit the 'puppet.conf' file in the puppet configuration directory
+
+/etc/puppetlabs/puppet/puppet.conf
+
+[master]
+ dns_alt_names=puppet-master,puppet
+ 
+ [main]
+ certname = puppet-master
+ server = puppet-master
+ environment = production
+ runinterval = 1h
+
+start the puppetserver and enable it
+
+systemctl start puppetserver
+systemctl enable puppetserver
+
+===================== Install and Configure Puppet Agent =====================
+
+yum install -y puppet-agent
+
+/etc/puppetlabs/puppet/puppet.conf
+
+[main]
+ certname = puppet-client
+ server = puppet-master
+ environment = production
+ runinterval = 1h
+
+===================== Register the puppet agent to the puppet master =====================
+
+Run the command below on the puppet agent shell.
+
+/opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+
+back to the puppet master shell and run the command below
+
+Open the port 8140 is working on cloud providers like AWS, GCP etc
+
+/opt/puppetlabs/bin/puppet cert list
+
+And you will get the pending Certificate Signing Request (CSR) from the puppet agent server 'puppet-client'.
+
+Sign the certificate using the command below.
+
+/opt/puppetlabs/bin/puppet cert sign puppet-client
+
+===================== Verify the Puppet Agent Configuration =====================
+
+After the puppet master signed the certificate file for the agent, run command below on the puppet agent to verify the configuration.
+
+/opt/puppetlabs/bin/puppet agent --test
+
+The Puppet agent will pull the configuration from the puppet master and applies to the server without any errorif everything is good.

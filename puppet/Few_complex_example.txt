@@ -1,0 +1,9 @@
+Follow this url below for setting up lamp stack easily
+
+https://www.edureka.co/community/40705/install-lamp-stack-by-creating-a-new-module-puppet
+
+
+Setting up lamp stack by using templates and modules 
+
+https://www.linode.com/docs/applications/configuration-management/use-puppet-modules-to-create-a-lamp-stack/
+
